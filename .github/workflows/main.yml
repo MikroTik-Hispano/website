@@ -1,51 +1,27 @@
-# Nombre del flujo de trabajo
 name: Deploy Website to GitHub Pages
-
-# Define cuándo se debe ejecutar
 on:
-  push:
-    branches:
-      - main
-
-# Permisos explícitos que pedirá el robot (de tu investigación)
-permissions:
-  contents: write
-
-# Tareas que el robot debe realizar
+push:
+branches: [main]
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      # 1. Descarga el código fuente de tu repositorio 'website'
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      # 2. Instala Node.js
-      - name: Setup Node.js ⚙️
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      # 3. Instala todas las dependencias
-      - name: Install dependencies 📦
-        run: npm install
-
-      # 4. Construye el sitio web
-      - name: Build project 🏗️
-        run: npm run build
-
-      # 5. Publica en el otro repositorio usando el token clásico
-      - name: Deploy to GitHub Pages 🚀
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          # Usamos el token clásico que ya creamos y guardamos
-          personal_token: ${{ secrets.ACCESS_TOKEN }}
-          # El repositorio donde se publicará la web final
-          external_repository: MikroTik-Hispano/mikrotik-hispano.github.io
-          # La rama de destino
-          publish_branch: main
-          # La carpeta que contiene el sitio web construido
-          publish_dir: ./dist
-          # Mensaje del commit que hará el robot
-          commit_message: '🚀 Deploy automático del sitio'
+build-and-deploy:
+runs-on: ubuntu-latest
+steps:
+- name: Checkout 🛎️
+uses: actions/checkout@v4
+- name: Setup Node.js ⚙️
+uses: actions/setup-node@v4
+with:
+node-version: 20
+cache: npm
+- name: Install dependencies 📦
+run: npm ci
+- name: Build project 🏗️
+run: npm run build
+- name: Deploy to GitHub Pages 🚀
+uses: peaceiris/actions-gh-pages@v4
+with:
+personal_token: ${{ secrets.ACCESS_TOKEN }}
+external_repository: MikroTik-Hispano/mikrotik-hispano.github.io
+publish_branch: main
+publish_dir: ./dist
+commit_message: "🚀 Deploy automático del sitio"
