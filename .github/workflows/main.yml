@@ -1,0 +1,52 @@
+# Nombre del flujo de trabajo
+name: Deploy Website to GitHub Pages
+
+# Define cuándo se debe ejecutar este robot
+on:
+  # Se ejecuta cada vez que subes código a la rama 'main'
+  push:
+    branches:
+      - main
+
+# Permisos necesarios para que el robot pueda escribir en el otro repositorio
+permissions:
+  contents: write
+
+# Tareas que el robot debe realizar
+jobs:
+  build-and-deploy:
+    # Tipo de máquina que usará el robot
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Descarga el código fuente de tu repositorio 'website'
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      # 2. Instala Node.js, la herramienta para construir el sitio
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usamos una versión moderna de Node.js
+          cache: 'npm'
+
+      # 3. Instala todas las dependencias del proyecto (como React, Vite, etc.)
+      - name: Install dependencies 📦
+        run: npm install
+
+      # 4. Construye el sitio web (crea la carpeta 'dist' con la versión final)
+      - name: Build project 🏗️
+        run: npm run build
+
+      # 5. Publica la carpeta 'dist' en el otro repositorio (mikrotik-hispano.github.io)
+      - name: Deploy to GitHub Pages 🚀
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # El repositorio donde se publicará la web final
+          external_repository: MikroTik-Hispano/mikrotik-hispano.github.io
+          # La rama de destino en ese repositorio
+          publish_branch: main
+          # La carpeta que contiene el sitio web construido
+          publish_dir: ./dist
+          # Mensaje del commit que hará el robot
+          commit_message: '🚀 Deploy website'
