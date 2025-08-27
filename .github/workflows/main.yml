@@ -8,10 +8,6 @@ on:
     branches:
       - main
 
-# Permisos necesarios para que el robot pueda escribir en el otro repositorio
-permissions:
-  contents: write
-
 # Tareas que el robot debe realizar
 jobs:
   build-and-deploy:
@@ -26,7 +22,7 @@ jobs:
       - name: Setup Node.js ⚙️
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Usamos una versión moderna de Node.js
+          node-version: '20'
           cache: 'npm'
 
       # 3. Instala todas las dependencias del proyecto (como React, Vite, etc.)
@@ -37,11 +33,12 @@ jobs:
       - name: Build project 🏗️
         run: npm run build
 
-      # 5. Publica la carpeta 'dist' en el otro repositorio (mikrotik-hispano.github.io)
+      # 5. Publica la carpeta 'dist' en el otro repositorio usando la "llave maestra"
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Usamos el token que creamos y guardamos como un secreto
+          personal_token: ${{ secrets.ACCESS_TOKEN }}
           # El repositorio donde se publicará la web final
           external_repository: MikroTik-Hispano/mikrotik-hispano.github.io
           # La rama de destino en ese repositorio
@@ -49,4 +46,4 @@ jobs:
           # La carpeta que contiene el sitio web construido
           publish_dir: ./dist
           # Mensaje del commit que hará el robot
-          commit_message: '🚀 Deploy website'
+          commit_message: '🚀 Deploy automático del sitio'
